@@ -1,20 +1,19 @@
 #include <Bluepad32.h>
-#include <ESP32Servo.h>
 #include <L298NX2.h>
 
-// Pin definition
-const unsigned int EN_A = 13;
-const unsigned int IN1_A = 32;
-const unsigned int IN2_A = 27;
+#define ESQUERDA 8
+#define DIREITA 4
+#define FRENTE 1
+#define TRAS 2
+#define FRENTE_ESQUERDA 9
+#define FRENTE_DIREITA 5
+#define TRAS_ESQUERDA 10
+#define TRAS_DIREITA 6
 
-const unsigned int IN1_B = 33;
-const unsigned int IN2_B = 15;
-const unsigned int EN_B = 12;
-
-// Initialize both motors
-L298NX2 motors(EN_A, IN1_A, IN2_A, EN_B, IN1_B, IN2_B);
-
-Servo myservo;
+#define rele4 12       //o pino IN1 do Rele (modulo 1) será ligado ao pino 8 do arduino
+#define rele3 27       //o pino IN2 do Rele (modulo 1) será ligado ao pino 9 do arduino
+#define rele2 33      //o pino IN1 do Rele (modulo 2) será ligado ao pino 10 do arduino
+#define rele1 15      //o pino IN2 do Rele (modulo 2)  será ligado ao pino 11 do arduino 
 
 ControllerPtr myControllers[BP32_MAX_GAMEPADS];
 
@@ -78,18 +77,11 @@ void dumpGamepad(ControllerPtr ctl) {
         ctl->accelY(),       // Accelerometer Y
         ctl->accelZ()        // Accelerometer Z
     );
-    int inputValue = ctl->axisX();
-
-    if(inputValue <= -200){
-      motors.forwardB();
-      motors.stopA();
-    }
-    if(inputValue >= 200){
-      motors.forwardA();
-      motors.stopB();
-    }
-    /*int mappedValue = map(inputValue, -511, 512, 0, 180);
-    myservo.write(mappedValue);*/
+    int eixoX = ctl->axisX();
+    int eixoY = ctl->axisY();
+    int xy = ctl->dpad();
+    controleRoboSetas(xy);
+    //controleRoboJoystick(eixoX, eixoY);
 }
 
 void dumpMouse(ControllerPtr ctl) {
@@ -206,14 +198,11 @@ void processGamepad(ControllerPtr ctl) {
       digitalWrite(13, HIGH);
     }
 
-    if(ctl->r2()){
-      motors.forwardA();
-      motors.forwardB();
-      motors.setSpeed(255);
-    }
-
     if(ctl->l2()){
-      motors.stop();
+      digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1      //desliga o motor 1
+      digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2      //desliga o motor 1
+      digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3      **desliga o motor 2
+      digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4      **desliga o motor 2
     }
     // Another way to query controller data is by getting the buttons() function.
     // See how the different "dump*" functions dump the Controller info.
@@ -287,20 +276,104 @@ void processControllers() {
         }
     }
 }
+/*void controleRoboJoystick(int eixoX, int eixoY){
+  //MOVIMENTAÇÕES DO ROBÔ
+  if(eixoX == -508 && eixoY == 4) { // Esquerda
+      motors.forwardA(); // motor direito para frente
+      motors.backwardB(); // motor esquerdo para trás
+  }
+  else if(eixoX == 512 && eixoY == 4) { // Direita
+      motors.forwardB(); // motor esquerdo para frente
+      motors.backwardA(); // motor direito para trás
+  }
+  else if(eixoX == 4 && eixoY == -508) { // Frente
+      motors.forward(); // motores para frente
+  }
+  else if(eixoX == 4 && eixoY == 512) { // Trás
+      motors.backward(); // motores para trás
+  }
+  else if((eixoX < 0 && eixoX > -508) && (eixoY < 0 && eixoY > -508)) { // Para frente e esquerda
+      motors.forwardA(); // motor direito para frente
+      motors.stopB(); // motor esquerdo parado
+  }
+  else if((eixoX > 0 && eixoX < 508) && (eixoY < 0 && eixoY > -508)) { // Para frente e direita
+      motors.forwardB(); // motor esquerdo para frente
+      motors.stopA(); // motor direito parado
+  }
+  else if((eixoX < 0 && eixoX > -508) && (eixoY > 0 && eixoY < 508)) { // Para trás e esquerda
+      motors.backwardB(); // motor esquerdo para trás
+      motors.stopA(); // motor direito parado
+  }
+  else if((eixoX > 0 && eixoX < 508) && (eixoY > 0 && eixoY < 508)) { // Para trás e direita
+      motors.backwardA(); // motor direito para trás
+      motors.stopB(); // motor esquerdo parado
+  }
+}*/
+
+void controleRoboSetas(int xy){
+  // MOVIMENTAÇÕES DO ROBÔ
+  switch(xy) {
+    case ESQUERDA: // Esquerda
+      digitalWrite(rele1, 0);                 //envia nível lógico baixo para o rele 1       //liga o motor 1
+      digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //para tras
+      digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3       **liga o motor 2
+      digitalWrite(rele4, 0);                 //envia nível lógico baixo para o rele 4      **para frente
+      break;
+    case DIREITA: // Direita
+      digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1       //liga o motor 1
+      digitalWrite(rele2, 0);                 //envia nível lógico baixo para o rele 2      //para frente
+      digitalWrite(rele3, 0);                 //envia nível lógico baixo para o rele 3       **liga o motor 2
+      digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4        **para tras
+      break;
+    case FRENTE: // Frente
+      digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1       //liga o motor 1
+      digitalWrite(rele2, 0);                 //envia nível lógico baixo para o rele 2      //para frente
+      digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3       **liga o motor 2
+      digitalWrite(rele4, 0);                 //envia nível lógico baixo para o rele 4      **para frente
+      break;
+    case TRAS: // Trás
+      digitalWrite(rele1, 0);                 //envia nível lógico baixo para o rele 1       //liga o motor 1
+      digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //para tras
+      digitalWrite(rele3, 0);                 //envia nível lógico baixo para o rele 3       **liga o motor 2
+      digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4        **para tras
+      break;
+    case FRENTE_ESQUERDA: // Para frente e esquerda
+      digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1      //liga o motor 1
+      digitalWrite(rele2, 0);                 //envia nível lógico baixo para o rele 2     //para frente
+      digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3      **desliga o motor 2
+      digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4      **desliga o motor 2
+      break;
+    case FRENTE_DIREITA: // Para frente e direita
+      digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1        //desliga o motor 1
+      digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //desliga o motor 1
+      digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3       **liga o motor 2
+      digitalWrite(rele4, 0);                 //envia nível lógico baixo para o rele 4      **para frente
+      break;
+    case TRAS_ESQUERDA: // Para trás e esquerda
+      digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1        //desliga o motor 1
+      digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //desliga o motor 1
+      digitalWrite(rele3, 0);                 //envia nível lógico baixo para o rele 3       **liga o motor 2
+      digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4        **para tras
+      break;
+    case TRAS_DIREITA: // Para trás e direita
+      digitalWrite(rele1, 0);                 //envia nível lógico baixo para o rele 1       //liga o motor 1
+      digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //para tras
+      digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3      **desliga o motor 2
+      digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4      **desliga o motor 2
+      break;
+    default: // Comando inválido
+      break;
+  }
+}
 
 // Arduino setup function. Runs in CPU 1
 void setup() {
-    motors.stop();
-    motors.setSpeed(255);
     pinMode(13, OUTPUT);
-    pinMode(12, OUTPUT);
-    pinMode(27, OUTPUT);
-    pinMode(33, OUTPUT);
-    myservo.attach(15);
-    digitalWrite(13, LOW);
-    digitalWrite(12, LOW);
-    digitalWrite(27, LOW);
-    digitalWrite(33, LOW);
+    pinMode(rele1, OUTPUT);
+    pinMode(rele2, OUTPUT);
+    pinMode(rele3, OUTPUT);
+    pinMode(rele4, OUTPUT);
+    digitalWrite(13, HIGH);
     Serial.begin(115200);
     Serial.printf("Firmware: %s\n", BP32.firmwareVersion());
     const uint8_t* addr = BP32.localBdAddress();
