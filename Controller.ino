@@ -1,5 +1,4 @@
 #include <Bluepad32.h>
-#include <L298NX2.h>
 
 #define ESQUERDA 8
 #define DIREITA 4
@@ -199,10 +198,7 @@ void processGamepad(ControllerPtr ctl) {
     }
 
     if(ctl->l2()){
-      digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1      //desliga o motor 1
-      digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2      //desliga o motor 1
-      digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3      **desliga o motor 2
-      digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4      **desliga o motor 2
+      stop();
     }
     // Another way to query controller data is by getting the buttons() function.
     // See how the different "dump*" functions dump the Controller info.
@@ -310,56 +306,95 @@ void processControllers() {
   }
 }*/
 
+void movimento_esquerda(){
+  digitalWrite(rele1, 0);                 //envia nível lógico baixo para o rele 1       //liga o motor 1
+  digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //para tras
+  digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3       **liga o motor 2
+  digitalWrite(rele4, 0);                 //envia nível lógico baixo para o rele 4      **para frente
+}
+
+void movimento_direita(){
+  digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1       //liga o motor 1
+  digitalWrite(rele2, 0);                 //envia nível lógico baixo para o rele 2      //para frente
+  digitalWrite(rele3, 0);                 //envia nível lógico baixo para o rele 3       **liga o motor 2
+  digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4        **para tras
+}
+
+void movimento_frente(){
+  digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1       //liga o motor 1
+  digitalWrite(rele2, 0);                 //envia nível lógico baixo para o rele 2      //para frente
+  digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3       **liga o motor 2
+  digitalWrite(rele4, 0);                 //envia nível lógico baixo para o rele 4      **para frente
+}
+
+void movimento_tras(){
+  digitalWrite(rele1, 0);                 //envia nível lógico baixo para o rele 1       //liga o motor 1
+  digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //para tras
+  digitalWrite(rele3, 0);                 //envia nível lógico baixo para o rele 3       **liga o motor 2
+  digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4        **para tras
+}
+
+void movimento_frente_esquerda(){
+  digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1      //liga o motor 1
+  digitalWrite(rele2, 0);                 //envia nível lógico baixo para o rele 2     //para frente
+  digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3      **desliga o motor 2
+  digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4      **desliga o motor 2
+}
+
+void movimento_frente_direita(){
+  digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1        //desliga o motor 1
+  digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //desliga o motor 1
+  digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3       **liga o motor 2
+  digitalWrite(rele4, 0);                 //envia nível lógico baixo para o rele 4      **para frente
+}
+
+void movimento_tras_esquerda(){
+  digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1        //desliga o motor 1
+  digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //desliga o motor 1
+  digitalWrite(rele3, 0);                 //envia nível lógico baixo para o rele 3       **liga o motor 2
+  digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4        **para tras
+}
+
+void movimento_tras_direita(){
+  digitalWrite(rele1, 0);                 //envia nível lógico baixo para o rele 1       //liga o motor 1
+  digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //para tras
+  digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3      **desliga o motor 2
+  digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4      **desliga o motor 2
+}
+
+void stop(){
+  digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1      //desliga o motor 1
+  digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2      //desliga o motor 1
+  digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3      **desliga o motor 2
+  digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4      **desliga o motor 2
+}
+
 void controleRoboSetas(int xy){
   // MOVIMENTAÇÕES DO ROBÔ
   switch(xy) {
     case ESQUERDA: // Esquerda
-      digitalWrite(rele1, 0);                 //envia nível lógico baixo para o rele 1       //liga o motor 1
-      digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //para tras
-      digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3       **liga o motor 2
-      digitalWrite(rele4, 0);                 //envia nível lógico baixo para o rele 4      **para frente
+      movimento_esquerda();
       break;
     case DIREITA: // Direita
-      digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1       //liga o motor 1
-      digitalWrite(rele2, 0);                 //envia nível lógico baixo para o rele 2      //para frente
-      digitalWrite(rele3, 0);                 //envia nível lógico baixo para o rele 3       **liga o motor 2
-      digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4        **para tras
+      movimento_direita();
       break;
     case FRENTE: // Frente
-      digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1       //liga o motor 1
-      digitalWrite(rele2, 0);                 //envia nível lógico baixo para o rele 2      //para frente
-      digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3       **liga o motor 2
-      digitalWrite(rele4, 0);                 //envia nível lógico baixo para o rele 4      **para frente
+      movimento_frente();
       break;
     case TRAS: // Trás
-      digitalWrite(rele1, 0);                 //envia nível lógico baixo para o rele 1       //liga o motor 1
-      digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //para tras
-      digitalWrite(rele3, 0);                 //envia nível lógico baixo para o rele 3       **liga o motor 2
-      digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4        **para tras
+      movimento_tras();
       break;
     case FRENTE_ESQUERDA: // Para frente e esquerda
-      digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1      //liga o motor 1
-      digitalWrite(rele2, 0);                 //envia nível lógico baixo para o rele 2     //para frente
-      digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3      **desliga o motor 2
-      digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4      **desliga o motor 2
+      movimento_frente_esquerda();
       break;
     case FRENTE_DIREITA: // Para frente e direita
-      digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1        //desliga o motor 1
-      digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //desliga o motor 1
-      digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3       **liga o motor 2
-      digitalWrite(rele4, 0);                 //envia nível lógico baixo para o rele 4      **para frente
+      movimento_frente_direita();
       break;
     case TRAS_ESQUERDA: // Para trás e esquerda
-      digitalWrite(rele1, 1);                 //envia nível lógico alto para o rele 1        //desliga o motor 1
-      digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //desliga o motor 1
-      digitalWrite(rele3, 0);                 //envia nível lógico baixo para o rele 3       **liga o motor 2
-      digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4        **para tras
+      movimento_tras_esquerda();
       break;
     case TRAS_DIREITA: // Para trás e direita
-      digitalWrite(rele1, 0);                 //envia nível lógico baixo para o rele 1       //liga o motor 1
-      digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //para tras
-      digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3      **desliga o motor 2
-      digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4      **desliga o motor 2
+      movimento_tras_direita();
       break;
     default: // Comando inválido
       break;
@@ -374,6 +409,7 @@ void setup() {
     pinMode(rele3, OUTPUT);
     pinMode(rele4, OUTPUT);
     digitalWrite(13, HIGH);
+    stop();
     Serial.begin(115200);
     Serial.printf("Firmware: %s\n", BP32.firmwareVersion());
     const uint8_t* addr = BP32.localBdAddress();
