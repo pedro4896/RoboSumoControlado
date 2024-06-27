@@ -76,11 +76,11 @@ void dumpGamepad(ControllerPtr ctl) {
         ctl->accelY(),       // Accelerometer Y
         ctl->accelZ()        // Accelerometer Z
     );
-    int eixoX = ctl->axisX();
+    int eixoX = ctl->axisRX();
     int eixoY = ctl->axisY();
     int xy = ctl->dpad();
     controleRoboSetas(xy);
-    //controleRoboJoystick(eixoX, eixoY);
+    controleRoboJoystick(eixoX, eixoY);
 }
 
 void dumpMouse(ControllerPtr ctl) {
@@ -272,45 +272,14 @@ void processControllers() {
         }
     }
 }
-/*void controleRoboJoystick(int eixoX, int eixoY){
-  //MOVIMENTAÇÕES DO ROBÔ
-  if(eixoX == -508 && eixoY == 4) { // Esquerda
-      motors.forwardA(); // motor direito para frente
-      motors.backwardB(); // motor esquerdo para trás
-  }
-  else if(eixoX == 512 && eixoY == 4) { // Direita
-      motors.forwardB(); // motor esquerdo para frente
-      motors.backwardA(); // motor direito para trás
-  }
-  else if(eixoX == 4 && eixoY == -508) { // Frente
-      motors.forward(); // motores para frente
-  }
-  else if(eixoX == 4 && eixoY == 512) { // Trás
-      motors.backward(); // motores para trás
-  }
-  else if((eixoX < 0 && eixoX > -508) && (eixoY < 0 && eixoY > -508)) { // Para frente e esquerda
-      motors.forwardA(); // motor direito para frente
-      motors.stopB(); // motor esquerdo parado
-  }
-  else if((eixoX > 0 && eixoX < 508) && (eixoY < 0 && eixoY > -508)) { // Para frente e direita
-      motors.forwardB(); // motor esquerdo para frente
-      motors.stopA(); // motor direito parado
-  }
-  else if((eixoX < 0 && eixoX > -508) && (eixoY > 0 && eixoY < 508)) { // Para trás e esquerda
-      motors.backwardB(); // motor esquerdo para trás
-      motors.stopA(); // motor direito parado
-  }
-  else if((eixoX > 0 && eixoX < 508) && (eixoY > 0 && eixoY < 508)) { // Para trás e direita
-      motors.backwardA(); // motor direito para trás
-      motors.stopB(); // motor esquerdo parado
-  }
-}*/
 
 void movimento_esquerda(){
   digitalWrite(rele1, 0);                 //envia nível lógico baixo para o rele 1       //liga o motor 1
   digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //para tras
   digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3       **liga o motor 2
   digitalWrite(rele4, 0);                 //envia nível lógico baixo para o rele 4      **para frente
+  delay(300);
+  stop();
 }
 
 void movimento_direita(){
@@ -318,6 +287,8 @@ void movimento_direita(){
   digitalWrite(rele2, 0);                 //envia nível lógico baixo para o rele 2      //para frente
   digitalWrite(rele3, 0);                 //envia nível lógico baixo para o rele 3       **liga o motor 2
   digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4        **para tras
+  delay(300);
+  stop();
 }
 
 void movimento_frente(){
@@ -367,6 +338,22 @@ void stop(){
   digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2      //desliga o motor 1
   digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3      **desliga o motor 2
   digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4      **desliga o motor 2
+}
+
+void controleRoboJoystick(int eixoX, int eixoY){
+  //MOVIMENTAÇÕES DO ROBÔ
+  if(eixoX >= -512 && eixoX <= -10) { // Esquerda
+    movimento_direita();
+  }
+  else if(eixoX <= 512 && eixoX >= 10) { // Direita
+    movimento_esquerda();
+  }
+  if(eixoY >= -512 && eixoY <= -10) { // Frente
+    movimento_frente();
+  }
+  else if(eixoY <= 512 && eixoY >= 10) { // Trás
+    movimento_tras();
+  }
 }
 
 void controleRoboSetas(int xy){
@@ -438,9 +425,9 @@ void loop() {
     // This call fetches all the controllers' data.
     // Call this function in your main loop.
     bool dataUpdated = BP32.update();
-    if (dataUpdated)
+    if (dataUpdated){
         processControllers();
-
+    }
     // The main loop must have some kind of "yield to lower priority task" event.
     // Otherwise, the watchdog will get triggered.
     // If your main loop doesn't have one, just add a simple `vTaskDelay(1)`.
