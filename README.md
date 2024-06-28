@@ -23,7 +23,34 @@
   <ol>
     <li>
       <strong>Baixar e instalar a Arduino IDE:</strong>
-      <ul><li>Se você ainda não tem a Arduino IDE instalada, baixe-a do <a href="https://www.arduino.cc/en/software">site oficial do Arduino</a> e siga as instruções de instalação para o seu sistema operacional.</li></ul>
+      <ul>
+        <li>
+          Se você ainda não tem a Arduino IDE instalada, baixe-a do <a href="https://www.arduino.cc/en/software">site oficial do Arduino</a> e siga as instruções de instalação para o seu sistema operacional.
+        </li>
+      </ul>
+    </li>
+    <li>
+      <strong>Abrir a Arduino IDE:</strong>
+      <ul>
+        <li>Após a instalação, abra a Arduino IDE.</li>
+      </ul>
+    </li>
+    <li>
+      <strong>Adicionar suporte para a ESP32:</strong>
+      <ul>
+        <li>Vá para o menu "File" (Arquivo) e selecione "Preferences" (Preferências).</li>
+        <li>Na janela que abrir, procure pelo campo "Additional Boards Manager URLs" (URLs Adicionais do Gerenciador de Placas).</li>
+        <li>Adicione a seguinte URL: <strong>https://dl.espressif.com/dl/package_esp32_index.json</strong></li>
+        <li>Clique em "OK" para salvar as mudanças.</li>
+      </ul>
+    </li>
+    <li>
+      <strong>Instalar o pacote da ESP32:</strong>
+      <ul>
+        <li>Vá para o menu "Tools" (Ferramentas) e selecione "Board" (Placa) e depois "Boards Manager" (Gerenciador de Placas).</li>
+        <li>Na janela que abrir, digite "ESP32" na barra de busca.</li>
+        <li>Encontre o pacote "esp32" da Espressif Systems e clique em "Install" (Instalar).</li>
+      </ul>
     </li>
   </ol>
 </p>
