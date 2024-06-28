@@ -81,6 +81,34 @@
   Depois de completar esses passos, a Arduino IDE estará configurada para programar a ESP32. Agora você está pronto para começar a desenvolver e carregar códigos para a sua placa ESP32.
 </p>
 
+<h2>Lista de Materiais</h2>
+<table>
+  <tr>
+    <td>Quantidade</td>
+    <td>Componente</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>ESP32</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>Relé 5V - 4 Canais</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>Motor Vidro Elétrico</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>Bateria 18650</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>Bateria Lipo 11.1V</td>
+  </tr>
+</table>
+
 <h2>Diagrama de Ligação</h2>
 <img src="https://github.com/pedro4896/RoboSumo/blob/main/Diagrama_conexao.jpg" height="400px" align="center">
 
