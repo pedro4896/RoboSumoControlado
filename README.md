@@ -52,7 +52,33 @@
         <li>Encontre o pacote "esp32" da Espressif Systems e clique em "Install" (Instalar).</li>
       </ul>
     </li>
+    <li>
+      <strong>Adicionar suporte para Bluepad32:</strong>
+      <ul>
+        <li>Vá para o menu "File" (Arquivo) e selecione "Preferences" (Preferências).</li>
+        <li>Na janela que abrir, procure pelo campo "Additional Boards Manager URLs" (URLs Adicionais do Gerenciador de Placas).</li>
+        <li>Adicione a seguinte URL: <strong>https://raw.githubusercontent.com/ricardoquesada/esp32-arduino-lib-builder/master/bluepad32_files/package_esp32_bluepad32_index.json</strong></li>
+        <li>Clique em "OK" para salvar as mudanças.</li>
+      </ul>
+    </li>
+    <li>
+      <strong>Instalar o pacote da ESP32:</strong>
+      <ul>
+        <li>Vá para o menu "Tools" (Ferramentas) e selecione "Board" (Placa) e depois "Boards Manager" (Gerenciador de Placas).</li>
+        <li>Na janela que abrir, digite "esp32_bluepad32" na barra de busca.</li>
+        <li>Encontre o pacote "esp32_bluepad32" da Ricardo Quesada e clique em "Install" (Instalar).</li>
+      </ul>
+    </li>
+    <li>
+      <strong>Selecionar a placa ESP32:</strong>
+      <ul>
+        <li>Após a instalação, vá novamente para o menu "Tools" (Ferramentas), selecione "Board" (Placa), vá em "esp32_bluepad32" e escolha o modelo específico da sua placa ESP32.</li>
+      </ul>
+    </li>
   </ol>
+</p>
+<p>
+  Depois de completar esses passos, a Arduino IDE estará configurada para programar a ESP32. Agora você está pronto para começar a desenvolver e carregar códigos para a sua placa ESP32.
 </p>
 
 
