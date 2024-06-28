@@ -81,6 +81,11 @@
   Depois de completar esses passos, a Arduino IDE estará configurada para programar a ESP32. Agora você está pronto para começar a desenvolver e carregar códigos para a sua placa ESP32.
 </p>
 
-
 <h2>Diagrama de Ligação</h2>
 <img src="https://github.com/pedro4896/RoboSumo/blob/main/Diagrama_conexao.jpg" height="400px" align="center">
+
+<h2>Créditos</h2>
+<ul>
+  <li>Ricardo Quesada: https://github.com/ricardoquesada/bluepad32</li>
+  <li>Abraao Lacerda: https://www.youtube.com/watch?v=K_rIaBKQcCk</li>
+</ul>
