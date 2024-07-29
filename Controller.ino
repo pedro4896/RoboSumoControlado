@@ -1,5 +1,6 @@
 #include <Bluepad32.h>
 
+// Definicação  do Dpad
 #define ESQUERDA 8
 #define DIREITA 4
 #define FRENTE 1
@@ -9,10 +10,14 @@
 #define TRAS_ESQUERDA 10
 #define TRAS_DIREITA 6
 
-#define rele4 12       //o pino IN1 do Rele (modulo 1) será ligado ao pino 8 do arduino
-#define rele3 27       //o pino IN2 do Rele (modulo 1) será ligado ao pino 9 do arduino
-#define rele2 33      //o pino IN1 do Rele (modulo 2) será ligado ao pino 10 do arduino
-#define rele1 15      //o pino IN2 do Rele (modulo 2)  será ligado ao pino 11 do arduino 
+// Definição do relé
+#define rele4 12       //o pino IN1 do Rele (modulo 1) será ligado ao pino 12 da Esp32
+#define rele3 27       //o pino IN2 do Rele (modulo 1) será ligado ao pino 27 da Esp32
+#define rele2 33      //o pino IN1 do Rele (modulo 2) será ligado ao pino 33 da Esp32
+#define rele1 15      //o pino IN2 do Rele (modulo 2)  será ligado ao pino 15 da Esp32
+#define rele5 13
+
+bool estadoRele = false;
 
 ControllerPtr myControllers[BP32_MAX_GAMEPADS];
 
@@ -54,6 +59,7 @@ void onDisconnectedController(ControllerPtr ctl) {
         Serial.println("CALLBACK: Controller disconnected, but not found in myControllers");
     }
 }
+
 // ----- JOYSTICK ------
 void dumpGamepad(ControllerPtr ctl) {
     Serial.printf(
@@ -150,7 +156,6 @@ void processGamepad(ControllerPtr ctl) {
     // By query each button individually:
     //  a(), b(), x(), y(), l1(), etc...
     if (ctl->a()) {
-        digitalWrite(33, HIGH);
         static int colorIdx = 0;
         // Some gamepads like DS4 and DualSense support changing the color LED.
         // It is possible to change it by calling:
@@ -172,7 +177,6 @@ void processGamepad(ControllerPtr ctl) {
     }
 
     if (ctl->b()) {
-        digitalWrite(27, HIGH);
         // Turn on the 4 LED. Each bit represents one LED.
         static int led = 0;
         led++;
@@ -184,7 +188,6 @@ void processGamepad(ControllerPtr ctl) {
     }
 
     if (ctl->x()) {
-        digitalWrite(12, HIGH);
         // Some gamepads like DS3, DS4, DualSense, Switch, Xbox One S, Stadia support rumble.
         // It is possible to set it by calling:
         // Some controllers have two motors: "strong motor", "weak motor".
@@ -193,12 +196,18 @@ void processGamepad(ControllerPtr ctl) {
                             0x40 /* strongMagnitude */);
     }
 
-    if (ctl->y()) {
-      digitalWrite(13, HIGH);
-    }
-
     if(ctl->l2()){
       stop();
+    }
+
+    if(ctl->r1()){
+      if(estadoRele){
+        digitalWrite(rele5, 0);
+        estadoRele = false;
+      }else{
+        digitalWrite(rele5, 1);
+        estadoRele = true;
+      }
     }
     // Another way to query controller data is by getting the buttons() function.
     // See how the different "dump*" functions dump the Controller info.
@@ -342,12 +351,13 @@ void stop(){
 
 void controleRoboJoystick(int eixoX, int eixoY){
   //MOVIMENTAÇÕES DO ROBÔ
-  if(eixoX >= -512 && eixoX <= -10) { // Esquerda
+  if(eixoX >= -512 && eixoX <= -10) { // Direita
     movimento_direita();
   }
-  else if(eixoX <= 512 && eixoX >= 10) { // Direita
+  else if(eixoX <= 512 && eixoX >= 10) { // Esquerda
     movimento_esquerda();
   }
+  
   if(eixoY >= -512 && eixoY <= -10) { // Frente
     movimento_frente();
   }
@@ -390,12 +400,12 @@ void controleRoboSetas(int xy){
 
 // Arduino setup function. Runs in CPU 1
 void setup() {
-    pinMode(13, OUTPUT);
+    pinMode(rele5, OUTPUT);
     pinMode(rele1, OUTPUT);
     pinMode(rele2, OUTPUT);
     pinMode(rele3, OUTPUT);
     pinMode(rele4, OUTPUT);
-    digitalWrite(13, HIGH);
+    digitalWrite(rele5, 0);
     stop();
     Serial.begin(115200);
     Serial.printf("Firmware: %s\n", BP32.firmwareVersion());
