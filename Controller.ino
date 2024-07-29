@@ -15,7 +15,7 @@
 #define rele3 27       //o pino IN2 do Rele (modulo 1) será ligado ao pino 27 da Esp32
 #define rele2 33      //o pino IN1 do Rele (modulo 2) será ligado ao pino 33 da Esp32
 #define rele1 15      //o pino IN2 do Rele (modulo 2)  será ligado ao pino 15 da Esp32
-#define rele5 13
+#define rele5 14
 
 bool estadoRele = false;
 
@@ -405,7 +405,9 @@ void setup() {
     pinMode(rele2, OUTPUT);
     pinMode(rele3, OUTPUT);
     pinMode(rele4, OUTPUT);
+    pinMode(13, OUTPUT);
     digitalWrite(rele5, 0);
+    digitalWrite(13, HIGH);
     stop();
     Serial.begin(115200);
     Serial.printf("Firmware: %s\n", BP32.firmwareVersion());
