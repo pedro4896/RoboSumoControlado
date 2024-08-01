@@ -96,6 +96,10 @@
     <td>Relé 5V - 4 Canais</td>
   </tr>
   <tr>
+    <td>1</td>
+    <td>Relé 5V</td>
+  </tr>
+  <tr>
     <td>2</td>
     <td>Motor Vidro Elétrico</td>
   </tr>
@@ -106,6 +110,30 @@
   <tr>
     <td>1</td>
     <td>Bateria Lipo 11.1V</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>Case para batereira 18650</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>Conetores XT60(macho+fêmea)</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>Controle remoto compatível com o Bluepad</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>Barra roscada de 8mm</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>rolamento 628 2rs</td>
+  </tr>
+  <tr>
+    <td>1kg</td>
+    <td>Filamento para impressão 3D</td>
   </tr>
 </table>
 
