@@ -287,7 +287,7 @@ void movimento_esquerda(){
   digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //para tras
   digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3       **liga o motor 2
   digitalWrite(rele4, 0);                 //envia nível lógico baixo para o rele 4      **para frente
-  delay(300);
+  delay(150);
   stop();
 }
 
@@ -296,7 +296,7 @@ void movimento_direita(){
   digitalWrite(rele2, 0);                 //envia nível lógico baixo para o rele 2      //para frente
   digitalWrite(rele3, 0);                 //envia nível lógico baixo para o rele 3       **liga o motor 2
   digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4        **para tras
-  delay(300);
+  delay(150);
   stop();
 }
 
