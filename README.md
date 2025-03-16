@@ -1,4 +1,5 @@
 <h1>Robô Modalidade Sumô - Controle Remoto</h1>
+<img src="https://github.com/pedro4896/RoboSumoControlado/blob/main/robos.jpeg" height="400px" align="center">
 <p>
   Um robô sumô é um tipo de robô projetado para participar de competições inspiradas no esporte tradicional japonês de sumô. Essas competições envolvem dois robôs tentando empurrar um ao outro para fora de uma arena circular, chamada dohyo, de maneira semelhante aos lutadores de sumô humanos.
 </p>
@@ -113,7 +114,7 @@
   </tr>
   <tr>
     <td>1</td>
-    <td>Case para batereira 18650</td>
+    <td>Case para bateria 18650</td>
   </tr>
   <tr>
     <td>3</td>
