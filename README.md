@@ -132,14 +132,14 @@
     <td>2</td>
     <td>rolamento 628 2rs</td>
   </tr>
+      <td>2</td>
+      <td>Barra de pinos fêmea</td>
+  </tr>
   <tr>
     <td>1kg</td>
     <td>Filamento para impressão 3D</td>
   </tr>
   <tr>
-    <td>2</td>
-    <td>Barra de pinos fêmea</td>
-  </tr>
 </table>
 
 <h2>Diagrama de Ligação</h2>
