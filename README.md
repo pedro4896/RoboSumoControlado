@@ -1,5 +1,5 @@
 <h1>Robô Modalidade Sumô - Controle Remoto</h1>
-<img src="https://github.com/pedro4896/RoboSumoControlado/blob/main/robos.jpeg" height="400px" align="center">
+<img src="robos.jpeg" height="400px" align="center">
 <p>
   Um robô sumô é um tipo de robô projetado para participar de competições inspiradas no esporte tradicional japonês de sumô. Essas competições envolvem dois robôs tentando empurrar um ao outro para fora de uma arena circular, chamada dohyo, de maneira semelhante aos lutadores de sumô humanos.
 </p>
@@ -41,7 +41,7 @@
       <ul>
         <li>Vá para o menu "File" (Arquivo) e selecione "Preferences" (Preferências).</li>
         <li>Na janela que abrir, procure pelo campo "Additional Boards Manager URLs" (URLs Adicionais do Gerenciador de Placas).</li>
-        <li>Adicione a seguinte URL: <strong>https://dl.espressif.com/dl/package_esp32_index.json</strong></li>
+        <li>Adicione a seguinte URL: <strong>https://espressif.github.io/arduino-esp32/package_esp32_index.json</strong></li>
         <li>Clique em "OK" para salvar as mudanças.</li>
       </ul>
     </li>
@@ -73,7 +73,8 @@
     <li>
       <strong>Selecionar a placa ESP32:</strong>
       <ul>
-        <li>Após a instalação, vá novamente para o menu "Tools" (Ferramentas), selecione "Board" (Placa), vá em "esp32_bluepad32" e escolha o modelo específico da sua placa ESP32.</li>
+        <li>Após a instalação, vá novamente para o menu "Tools" (Ferramentas), selecione "Board" (Placa), vá em "esp32_bluepad32" e escolha o modelo específico da sua placa ESP32 (por exemplo, "ESP32 Dev Module").</li>
+        <li>Atenção: escolha a placa dentro de "esp32_bluepad32". Se escolher a placa de mesmo nome dentro de "esp32", a compilação falha com o erro <code>Bluepad32.h: No such file or directory</code>.</li>
       </ul>
     </li>
   </ol>
@@ -110,7 +111,7 @@
   </tr>
   <tr>
     <td>1</td>
-    <td>Bateria Lipo 11.1V</td>
+    <td>Bateria Lipo 11.1V (alimentação dos motores)</td>
   </tr>
   <tr>
     <td>1</td>
@@ -132,18 +133,43 @@
     <td>2</td>
     <td>rolamento 628 2rs</td>
   </tr>
-      <td>2</td>
-      <td>Barra de pinos fêmea</td>
+  <tr>
+    <td>2</td>
+    <td>Barra de pinos fêmea</td>
   </tr>
   <tr>
     <td>1kg</td>
     <td>Filamento para impressão 3D</td>
   </tr>
-  <tr>
 </table>
 
+<h2>Placa e controles compatíveis</h2>
+<p>
+  O projeto foi feito para o <strong>ESP32 clássico</strong> (ESP32-WROOM / DevKit V1 / "ESP32 Dev Module", ou a Adafruit Feather ESP32 do diagrama). Ele tem Bluetooth Clássico e Bluetooth LE, então aceita a maioria dos controles suportados pelo Bluepad32, incluindo o DualShock 4 (PS4).
+</p>
+<p>
+  O <strong>ESP32-S3</strong> e o <strong>ESP32-C3</strong> só têm Bluetooth LE: controles de PS3, PS4, PS5, Switch Pro e Wii não pareiam com eles. Além disso, no ESP32-S3 os GPIOs 27 e 33 usados pelo código não estão disponíveis. A lista completa de controles está na <a href="https://bluepad32.readthedocs.io/en/latest/supported_gamepads/">documentação do Bluepad32</a>.
+</p>
+
+<h2>Comandos do controle</h2>
+<ul>
+  <li><strong>D-pad (setas):</strong> frente, trás, giro e diagonais. Ao soltar, o robô para.</li>
+  <li><strong>Analógicos:</strong> usados quando nenhuma seta está pressionada. O analógico esquerdo (vertical) controla frente/trás e o direito (horizontal) controla o giro.</li>
+  <li><strong>L2:</strong> freio (para os motores).</li>
+  <li><strong>R1:</strong> liga/desliga o relé 5.</li>
+  <li>Se o controle desconectar, os motores param automaticamente.</li>
+</ul>
+
 <h2>Diagrama de Ligação</h2>
-<img src="https://github.com/pedro4896/RoboSumo/blob/main/Diagrama_conexao.jpg" height="400px" align="center">
+<img src="Diagrama_conexao.jpg" height="400px" align="center">
+
+<h2>Observações de montagem</h2>
+<ul>
+  <li><strong>Alimentação dos motores:</strong> use a LiPo 11,1 V da lista de materiais. Motores de vidro elétrico consomem vários ampères, e uma bateria de 9 V (como a do diagrama) não consegue fornecer essa corrente.</li>
+  <li><strong>Alimentação do módulo de relés:</strong> o módulo é de 5 V. Se o VCC dele for ligado à bateria 18650 (cerca de 3,7 V), os relés podem falhar. Prefira alimentá-lo com 5 V, por exemplo com um regulador step-down ligado à LiPo, mantendo o GND comum com a ESP32.</li>
+  <li><strong>GPIO 12:</strong> é um pino de "strapping" do ESP32. Se a placa não ligar ou ficar reiniciando com o módulo de relés conectado, mude o <code>rele4</code> para o GPIO 26 no código e mova o fio correspondente.</li>
+  <li><strong>Depuração:</strong> para ver os dados do controle no Serial Monitor (115200 baud), mude <code>DEBUG_CONTROLE</code> para 1 no código. Deixe em 0 durante as lutas.</li>
+</ul>
 
 <h2>Créditos</h2>
 <ul>
