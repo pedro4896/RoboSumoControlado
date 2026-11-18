@@ -10,7 +10,23 @@
 #define TRAS_ESQUERDA 10
 #define TRAS_DIREITA 6
 
+// Placa alvo: ESP32 clássico (ex.: "ESP32 Dev Module" em esp32_bluepad32).
+// O ESP32-S3 não tem Bluetooth Clássico (controles de PS3/PS4/PS5/Switch não pareiam)
+// e não possui os GPIOs 27 e 33 livres.
+
+// Exibe no Serial Monitor os dados do controle a cada leitura.
+// Deixe em 0 durante as lutas: imprimir tudo isso deixa o robô mais lento.
+#define DEBUG_CONTROLE 0
+
+// Zona morta do analógico (escala de -512 a 512). Evita que a folga do
+// analógico em repouso movimente o robô.
+#define ZONA_MORTA 100
+
 // Definição do relé
+// ATENÇÃO: o GPIO 12 é um pino de "strapping" do ESP32. Se ele estiver em nível
+// alto no momento em que a placa liga, ela pode não iniciar ou ficar reiniciando.
+// Se isso acontecer com o módulo de relés conectado, mude o rele4 para o GPIO 26
+// (e mova o fio do IN1 para o pino 26).
 #define rele4 12       //o pino IN1 do Rele (modulo 1) será ligado ao pino 12 da Esp32
 #define rele3 27       //o pino IN2 do Rele (modulo 1) será ligado ao pino 27 da Esp32
 #define rele2 33      //o pino IN1 do Rele (modulo 2) será ligado ao pino 33 da Esp32
@@ -46,6 +62,10 @@ void onConnectedController(ControllerPtr ctl) {
 void onDisconnectedController(ControllerPtr ctl) {
     bool foundController = false;
 
+    // Segurança: se o controle desconectar (bateria, distância), os motores param.
+    // Sem isso, o robô continuaria executando o último comando recebido.
+    stop();
+
     for (int i = 0; i < BP32_MAX_GAMEPADS; i++) {
         if (myControllers[i] == ctl) {
             Serial.printf("CALLBACK: Controller disconnected from index=%d\n", i);
@@ -62,6 +82,7 @@ void onDisconnectedController(ControllerPtr ctl) {
 
 // ----- JOYSTICK ------
 void dumpGamepad(ControllerPtr ctl) {
+#if DEBUG_CONTROLE
     Serial.printf(
         "idx=%d, dpad: 0x%02x, buttons: 0x%04x, axis L: %4d, %4d, axis R: %4d, %4d, brake: %4d, throttle: %4d, "
         "misc: 0x%02x, gyro x:%6d y:%6d z:%6d, accel x:%6d y:%6d z:%6d\n",
@@ -82,11 +103,19 @@ void dumpGamepad(ControllerPtr ctl) {
         ctl->accelY(),       // Accelerometer Y
         ctl->accelZ()        // Accelerometer Z
     );
-    int eixoX = ctl->axisRX();
-    int eixoY = ctl->axisY();
+#endif
+}
+
+// Decide o movimento do robô a partir do controle.
+// O D-pad tem prioridade; o analógico só é usado quando nenhuma seta está pressionada.
+// Assim os dois não "brigam" pelo comando dos motores.
+void controlarMovimento(ControllerPtr ctl) {
     int xy = ctl->dpad();
-    controleRoboSetas(xy);
-    controleRoboJoystick(eixoX, eixoY);
+    if (xy != 0) {
+        controleRoboSetas(xy);
+    } else {
+        controleRoboJoystick(ctl->axisRX(), ctl->axisY());
+    }
 }
 
 void dumpMouse(ControllerPtr ctl) {
@@ -136,7 +165,7 @@ void dumpKeyboard(ControllerPtr ctl) {
             Serial.printf("%s,", keyName);
         }
     }
-    Console.printf("\n");
+    Serial.printf("\n");
 }
 
 void dumpBalanceBoard(ControllerPtr ctl) {
@@ -196,21 +225,23 @@ void processGamepad(ControllerPtr ctl) {
                             0x40 /* strongMagnitude */);
     }
 
-    if(ctl->l2()){
+    // O R1 alterna o relé 5 só no instante em que é apertado (borda de subida).
+    // Antes, o relé alternava a cada leitura enquanto o botão ficava pressionado.
+    static bool r1Anterior = false;
+    bool r1Agora = ctl->r1();
+    if (r1Agora && !r1Anterior) {
+      estadoRele = !estadoRele;
+      digitalWrite(rele5, estadoRele ? 1 : 0);
+    }
+    r1Anterior = r1Agora;
+
+    // L2 é o freio: tem prioridade sobre qualquer comando de movimento.
+    if (ctl->l2()) {
       stop();
+    } else {
+      controlarMovimento(ctl);
     }
 
-    if(ctl->r1()){
-      if(estadoRele){
-        digitalWrite(rele5, 0);
-        estadoRele = false;
-      }else{
-        digitalWrite(rele5, 1);
-        estadoRele = true;
-      }
-    }
-    // Another way to query controller data is by getting the buttons() function.
-    // See how the different "dump*" functions dump the Controller info.
     dumpGamepad(ctl);
 }
 
@@ -287,8 +318,6 @@ void movimento_esquerda(){
   digitalWrite(rele2, 1);                 //envia nível lógico alto para o rele 2        //para tras
   digitalWrite(rele3, 1);                 //envia nível lógico alto para o rele 3       **liga o motor 2
   digitalWrite(rele4, 0);                 //envia nível lógico baixo para o rele 4      **para frente
-  delay(150);
-  stop();
 }
 
 void movimento_direita(){
@@ -296,8 +325,6 @@ void movimento_direita(){
   digitalWrite(rele2, 0);                 //envia nível lógico baixo para o rele 2      //para frente
   digitalWrite(rele3, 0);                 //envia nível lógico baixo para o rele 3       **liga o motor 2
   digitalWrite(rele4, 1);                 //envia nível lógico alto para o rele 4        **para tras
-  delay(150);
-  stop();
 }
 
 void movimento_frente(){
@@ -351,18 +378,17 @@ void stop(){
 
 void controleRoboJoystick(int eixoX, int eixoY){
   //MOVIMENTAÇÕES DO ROBÔ
-  if(eixoX >= -512 && eixoX <= -10) { // Direita
-    movimento_direita();
-  }
-  else if(eixoX <= 512 && eixoX >= 10) { // Esquerda
-    movimento_esquerda();
-  }
-  
-  if(eixoY >= -512 && eixoY <= -10) { // Frente
+  // Frente/trás têm prioridade sobre o giro. Com o analógico na zona morta, o robô para.
+  if (eixoY <= -ZONA_MORTA) {        // Frente
     movimento_frente();
-  }
-  else if(eixoY <= 512 && eixoY >= 10) { // Trás
+  } else if (eixoY >= ZONA_MORTA) {  // Trás
     movimento_tras();
+  } else if (eixoX <= -ZONA_MORTA) { // Direita
+    movimento_direita();
+  } else if (eixoX >= ZONA_MORTA) {  // Esquerda
+    movimento_esquerda();
+  } else {                           // Analógico solto
+    stop();
   }
 }
 
@@ -393,7 +419,8 @@ void controleRoboSetas(int xy){
     case TRAS_DIREITA: // Para trás e direita
       movimento_tras_direita();
       break;
-    default: // Comando inválido
+    default: // Nenhuma seta (ou combinação inválida): para o robô
+      stop();
       break;
   }
 }
@@ -446,6 +473,7 @@ void loop() {
     // Detailed info here:
     // https://stackoverflow.com/questions/66278271/task-watchdog-got-triggered-the-tasks-did-not-reset-the-watchdog-in-time
 
-    //     vTaskDelay(1);
-    delay(150);
+    // Um atraso curto basta para alimentar o watchdog. O antigo delay(150)
+    // deixava o robô lento para responder aos comandos.
+    delay(10);
 }
